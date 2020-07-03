@@ -9,6 +9,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="structs.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="Actions.h" />
   </ItemGroup>
 </Project>
