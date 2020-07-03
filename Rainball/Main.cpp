@@ -14,7 +14,7 @@ namespace Rainball
 
         Player player{ BALL_GRAVITY, SETUP_SCALE };
         Waver waver{ SETUP_SIZE_X, SETUP_SIZE_Z, SETUP_SCALE, SETUP_BOX_HEIGHT };
-
+        
         void DefaultInit()
         {
             camera = MxObject::Create();
@@ -43,11 +43,7 @@ namespace Rainball
         {
             DefaultInit();
             
-            // add additional light
-            auto light = MxObject::Create();
-            light->AddComponent<PointLight>()->DiffuseColor = Vector3(0.6f, 0.6f, 1) * 54.f;
-            light->Transform.SetPosition(Vector3(25, 25, 25));
-            light->Name = "Little Sun";            
+            camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("./Resources/night.png");
             
             EventManager::AddEventListener("GC", [this](FpsUpdateEvent& even) mutable {
                 waver.GarbageCollect();
