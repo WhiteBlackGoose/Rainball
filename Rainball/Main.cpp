@@ -43,7 +43,13 @@ namespace Rainball
         {
             DefaultInit();
             
-            camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("./Resources/night.png");
+            // Uncomment this to enable a skybox
+            //camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("./Resources/night.png");
+
+            auto light = MxObject::Create();
+            light->AddComponent<PointLight>()->DiffuseColor = Vector3(0.6f, 0.6f, 1) * 54.f;
+            light->Transform.SetPosition(Vector3(25, 25, 25));
+            light->Name = "Little Sun";
             
             EventManager::AddEventListener("GC", [this](FpsUpdateEvent& even) mutable {
                 waver.GarbageCollect();
@@ -51,8 +57,18 @@ namespace Rainball
 
         }
 
+        float timeGone = 0;
+
         virtual void OnUpdate() override
         {
+            timeGone += GetTimeDelta();
+            if (timeGone > 3)
+            {
+                player.Shoot(Vector3(Random::GetFloat() * waver.GetWidth(), 30, Random::GetFloat() * waver.GetHeight()),
+                    Vector3(0, -1, 0), 48);
+                timeGone = 0;
+            }
+
             waver.Update(GetTimeDelta(), 0.1);
             if (InputManager::IsMousePressed(MouseButton::LEFT))
             {

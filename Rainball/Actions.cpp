@@ -122,3 +122,13 @@ Rainball::Player::Player(const Vector3& gravity, const float scale)
 	sph->Name = "ShotFactory";
 	spheres = sph->AddComponent<InstanceFactory>();
 }
+
+float Rainball::Waver::GetWidth()
+{
+	return this->bumpers.width() * scale;
+}
+
+float Rainball::Waver::GetHeight()
+{
+	return this->bumpers.height() * scale;
+}

@@ -9,7 +9,7 @@ namespace Rainball
     constexpr float SETUP_SCALE = 0.12f;
     constexpr size_t SETUP_SIZE_X = 200;
     constexpr size_t SETUP_SIZE_Z = 200;
-    constexpr float SETUP_BOX_HEIGHT = 2.5f;
+    constexpr float SETUP_BOX_HEIGHT = 4.5f;
 
     /*
     PLAYER CONSTANTS

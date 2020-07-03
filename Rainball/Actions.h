@@ -34,6 +34,9 @@ namespace Rainball
 		Collects scripts generating waves if a wave is too far and destroyes them
 		*/
 		void GarbageCollect();
+
+		float GetWidth();
+		float GetHeight();
 	};
 
 	class Player
