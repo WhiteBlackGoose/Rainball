@@ -7,7 +7,8 @@ WAVER
 
 */
 
-Rainball::Waver::Waver(int sizeX, int sizeZ, float scale) : sizeX(sizeX), sizeZ(sizeZ), scale(scale)
+Rainball::Waver::Waver(int sizeX, int sizeZ, float scale, float boxHeight) : 
+	sizeX(sizeX), sizeZ(sizeZ), scale(scale)
 {
 	auto wave = MxObject::Create();
 	wave->Name = "Waves";
@@ -19,14 +20,14 @@ Rainball::Waver::Waver(int sizeX, int sizeZ, float scale) : sizeX(sizeX), sizeZ(
 	auto factory = instancer->AddComponent<InstanceFactory>();
 	instancer->Name = "Surface";
 
-	bumpers.resize(sizeX, sizeZ, SurfaceScript(0, SCALE));
+	bumpers.resize(sizeX, sizeZ, SurfaceScript(0, scale, boxHeight));
 	for (int x = 0; x < sizeX; x++)
 		for (int z = 0; z < sizeZ; z++)
 		{
-			bumpers[x][z] = SurfaceScript(x + z, SCALE);
+			bumpers[x][z] = SurfaceScript(x + z, scale, boxHeight);
 			bumpers[x][z].inst = factory->MakeInstance();
-			bumpers[x][z].inst->Transform.SetPosition({ SCALE * x, 0, SCALE * z });
-			bumpers[x][z].inst->Transform.SetScale(Vector3(SCALE, SCALE, SCALE));
+			bumpers[x][z].inst->Transform.SetPosition({ scale * x, 0, scale * z });
+			bumpers[x][z].inst->Transform.SetScale(Vector3(scale, scale, scale));
 		}
 }
 
@@ -52,7 +53,7 @@ void Rainball::Waver::Wave(const int x, const int z, const float strength)
 	wInst->Transform.SetPosition(pos);
 	wInst->AddComponent<Behaviour>(WaveScript(
 		strength
-		, bumpers));
+		, bumpers, scale));
 
 }
 
@@ -81,7 +82,8 @@ void Rainball::Player::Shoot(const Vector3& position, const Vector3& direction, 
 
 	inst->AddComponent<Behaviour>(ShotBehaviour(
 		direction * speed,
-		position
+		position,
+		gravity
 	));
 }
 
@@ -110,7 +112,8 @@ void Rainball::Player::CheckReaction(Waver& destination)
 	}
 }
 
-Rainball::Player::Player()
+Rainball::Player::Player(const Vector3& gravity, const float scale)
+	: gravity(gravity), scale(scale)
 {
 	auto sph = MxObject::Create();
 	sph->AddComponent<MeshSource>()->Mesh = Primitives::CreateSphere(100);

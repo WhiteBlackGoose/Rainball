@@ -13,5 +13,6 @@
   <ItemGroup>
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Actions.h" />
+    <ClInclude Include="Constants.h" />
   </ItemGroup>
 </Project>

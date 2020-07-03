@@ -2,6 +2,7 @@
 #include <MxEngine.h>
 #include "Physics.h"
 #include "Actions.h"
+#include "Constants.h"
 
 namespace Rainball
 {
@@ -9,11 +10,10 @@ namespace Rainball
 
     class MxApplication : public Application
     {
-        
         MxObject::Handle camera;
 
-        Player player;
-        Waver waver{ sizeX, sizeZ, SCALE };
+        Player player{ BALL_GRAVITY, SETUP_SCALE };
+        Waver waver{ SETUP_SIZE_X, SETUP_SIZE_Z, SETUP_SCALE, SETUP_BOX_HEIGHT };
 
         void DefaultInit()
         {
@@ -23,6 +23,7 @@ namespace Rainball
             auto input = camera->AddComponent<InputControl>();
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(30);
+            camera->Transform.SetPosition(Vector3(10, 10, 10));
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             RenderManager::SetViewport(controller);
@@ -44,7 +45,7 @@ namespace Rainball
             
             // add additional light
             auto light = MxObject::Create();
-            light->AddComponent<PointLight>()->DiffuseColor = Vector3(1, 0.7f, 0) * 54.f;
+            light->AddComponent<PointLight>()->DiffuseColor = Vector3(0.6f, 0.6f, 1) * 54.f;
             light->Transform.SetPosition(Vector3(25, 25, 25));
             light->Name = "Little Sun";            
             
@@ -60,7 +61,7 @@ namespace Rainball
             if (InputManager::IsMousePressed(MouseButton::LEFT))
             {
                 auto controller = camera->GetComponent<CameraController>();
-                player.Shoot(camera->Transform.GetPosition(), controller->GetDirection(), DEFAULT_SPEED);
+                player.Shoot(camera->Transform.GetPosition(), controller->GetDirection(), BALL_DEFAULT_SPEED);
             }
 
             // cause a wave if a ball intersected the surface

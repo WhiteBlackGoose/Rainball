@@ -5,22 +5,16 @@ namespace Rainball
 {
     using namespace MxEngine;
 
-    constexpr float SCALE = 0.12f;
-    constexpr Vector3 GRAVITY = { 0, -6.f, 0 };
-    constexpr float DEFAULT_SPEED = 40.f;
-    constexpr size_t sizeX = 200;
-    constexpr size_t sizeZ = 200;
-    constexpr float BOX_HEIGHT = 2.5f;
-
     struct ShotBehaviour {
         float timeGone;
         Vector3 defaultVelocity;
         Vector3 defaultPosition;
+        Vector3 gravity;
 
         /*
         Creates an instance of a shot ball
         */
-        ShotBehaviour(const Vector3& defaultVelocity, const Vector3& defaultPosition);
+        ShotBehaviour(const Vector3& defaultVelocity, const Vector3& defaultPosition, const Vector3& gravity);
 
         /*
         Called automatically by Mx
@@ -41,8 +35,10 @@ namespace Rainball
         float offset;
         float scale;
         float offsetWaveY;
+        float boxHeight;
+
         MxObject::Handle inst;
-        SurfaceScript(float offset, float SCALE);
+        SurfaceScript(float offset, float SCALE, float boxHeight);
         void OnUpdate(float timeDelta);
     };
 
@@ -54,7 +50,8 @@ namespace Rainball
         float strength;
         Array2D<SurfaceScript>& arr2;
         bool useless;
-        WaveScript(float strength, Array2D<SurfaceScript>& cubes);
+        float scale;
+        WaveScript(float strength, Array2D<SurfaceScript>& cubes, float scale);
         void OnUpdate(MxObject& obj, float delta);
     };
 

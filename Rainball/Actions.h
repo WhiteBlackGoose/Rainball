@@ -17,7 +17,7 @@ namespace Rainball
 		int sizeX, sizeZ;
 		float scale;
 	public:
-		Waver(int sizeX, int sizeZ, float scale);
+		Waver(int sizeX, int sizeZ, float scale, float boxHeight);
 
 		/*
 		Call it in OnUpdate so it recomputes waves of the surface
@@ -40,6 +40,8 @@ namespace Rainball
 	{
 		friend Waver;
 		InstanceFactory::Handle spheres;
+		Vector3 gravity;
+		float scale;
 	public:
 		/*
 		Shoots a sphere from position along with direction with the speed of speed
@@ -55,7 +57,7 @@ namespace Rainball
 		/*
 		Creates a factory for shots
 		*/
-		Player();
+		Player(const Vector3& gravity, const float scale);
 	};
 
 	
