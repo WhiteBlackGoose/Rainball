@@ -7,8 +7,6 @@ namespace Rainball
 {
     using namespace MxEngine;
 
-    
-
     class MxApplication : public Application
     {
         
@@ -65,7 +63,6 @@ namespace Rainball
                 player.Shoot(camera->Transform.GetPosition(), controller->GetDirection(), DEFAULT_SPEED);
             }
 
-            
             // cause a wave if a ball intersected the surface
             player.CheckReaction(waver);
         }

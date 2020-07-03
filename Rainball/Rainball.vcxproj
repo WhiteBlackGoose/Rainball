@@ -219,7 +219,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MxApplication.cpp" />
+    <ClCompile Include="Actions.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MxEngine\src\MxEngine.vcxproj">
