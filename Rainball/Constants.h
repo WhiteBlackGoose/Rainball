@@ -23,6 +23,7 @@ namespace Rainball
     constexpr float WAVE_SPEED = 7;
     constexpr float WAVE_HEIGHT_SCALE = 0.008;
     constexpr float WAVE_LENGTH = 10;
-    constexpr float WAVE_DEFAULT_FLOW_COEF = 5.f;
+    constexpr float WAVE_DEFAULT_FLOW_COEF = 7.5f;
     constexpr float WAVE_DEFAULT_FLOW_FREQUENCY = 3.f;
+    constexpr float WAVE_QUALITY = 3.f;
 }

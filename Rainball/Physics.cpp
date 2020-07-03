@@ -1,6 +1,7 @@
 #include <MxEngine.h>
 #include "Physics.h"
 #include "Constants.h"
+#include <cstdarg>
 
 /*
 
@@ -39,10 +40,27 @@ Rainball::SurfaceScript::SurfaceScript(float offset, float SCALE, float boxHeigh
 
 }
 
+template<typename Arg, typename H>
+float Fourier(Arg arg, H coef)
+{
+    static_assert(std::is_same<Arg, float>::value, "Arg should be float");
+    static_assert(std::is_same<H, float>::value, "Arg should be float");
+    return std::sin(arg / coef);
+}
+
+template<typename Arg, typename H, typename ... T>
+float Fourier(Arg arg, H coef, T... rest)
+{
+    static_assert(std::is_same<Arg, float>::value, "Arg should be float");
+    static_assert(std::is_same<H, float>::value, "Arg should be float");
+    return Fourier(arg, rest...) * Fourier(arg, coef);
+}
+
 void Rainball::SurfaceScript::OnUpdate(float timeDelta)
 {
     t += timeDelta;
-    auto newElev = scale * (0.5f + sin((t + offset) * WAVE_DEFAULT_FLOW_FREQUENCY) / 2) * WAVE_DEFAULT_FLOW_COEF + offsetWaveY;
+    auto defWave = Fourier((t + offset) * WAVE_DEFAULT_FLOW_FREQUENCY, 1.f, 3.f, 5.f, 7.f);
+    auto newElev = scale * (0.5f + defWave / 2) * WAVE_DEFAULT_FLOW_COEF + offsetWaveY;
     auto newSize = newElev + boxHeight;
     auto newPos = inst->Transform.GetPosition();
     newPos.y = newElev / 2;
@@ -83,7 +101,7 @@ void Rainball::WaveScript::OnUpdate(MxObject& obj, float delta)
         {
             auto epicenter = obj.Transform.GetPosition();
             auto place = arr2[x][z].inst->Transform.GetPosition();
-            auto D = (Vector2(place.x - epicenter.x, place.z - epicenter.z)) / 2.7f;
+            auto D = (Vector2(place.x - epicenter.x, place.z - epicenter.z)) / WAVE_QUALITY;
             if (Length(D) - (t * WAVE_SPEED) > 2)
                 continue;
             arr2[x][z].offsetWaveY += strength / (std::abs(Length(D) - (t * WAVE_SPEED)) + 1) * -A * std::sin(log(t + 1) * T / t * Length(D) / 2);
