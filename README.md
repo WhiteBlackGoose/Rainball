@@ -1,7 +1,9 @@
 # Rainball
 A simple 3D project with pseudo water simulation based on [MxEngine](https://github.com/asc-community/MxEngine).
 
-<img align="center" src="presentation.gif">
+<p align="center">
+<img src="presentation.gif">
+</p>
 
 ### What is this project about?
 
