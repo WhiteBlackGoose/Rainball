@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Rainball/.vs/Rainball/v16/ipch/AutoPCH
+/Rainball/.vs/Rainball/v16
+/Rainball/x64/Release
+/Rainball/imgui.ini
