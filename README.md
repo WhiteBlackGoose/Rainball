@@ -1,5 +1,5 @@
 # Rainball
-A simple 3D project with pseudo water simulation based on [MxEngine](https://github.com/asc-community/MxEngine).
+Rainball is a simple 3D project with pseudo water simulation based on [MxEngine](https://github.com/asc-community/MxEngine) game engine.
 
 <p align="center">
 <img src="presentation.gif">
@@ -7,14 +7,20 @@ A simple 3D project with pseudo water simulation based on [MxEngine](https://git
 
 ### What is this project about?
 
-It is a small sample of what you can do using brand new [MxEngine](https://github.com/asc-community/MxEngine)
+It is a small sample of what you can do using brand new [MxEngine](https://github.com/asc-community/MxEngine). It uses GPU instanced rendering (through engine `InstanceFactory` component API) to simulate water as 2D array of fully shaded cubes. There are no direct calls to graphic api or custom shaders involved, application only uses engine abstractions to render a bunch of moving objects.
 
-### MxEngine
+### About MxEngine
 
-Is an open-source game engine allowing to work with graphics, user's actions, sounds, and many more.
-All this project's graphics and user's actions are based on its functionality. Feel free to 
-[contribute](https://github.com/asc-community/MxEngine/issues/4) to it.
+Is an open-source game engine which allows you to work with 3D graphics, create custom objects behaviour, play 3D sounds, and much-much more.
+This project's aim is to show how you can utilize its API and create some cool stuff. It you are interested, feel free to 
+[contribute](https://github.com/asc-community/MxEngine/issues/4) to the engine.
 
-MxE's main contributor: [MomoDeve](https://github.com/MomoDeve)
+### Copyrights
 
-MxE's owner: [ASC Community](https://github.com/asc-community)
+- Project Author: [WhiteBlackGoose](https://github.com/WhiteBlackGoose)
+
+- Project License: [MIT License](https://github.com/WhiteBlackGoose/Rainball/blob/master/LICENSE)
+
+- MxEngine's creator and main developer: [MomoDeve](https://github.com/MomoDeve)
+
+- MxEngine was created for ASC community and can be found on its [official github page](https://github.com/asc-community)
