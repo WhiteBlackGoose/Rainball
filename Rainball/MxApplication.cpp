@@ -1,15 +1,17 @@
 #pragma once
-#include "../MxEngine/src/MxEngine.h"
+#include <MxEngine.h>
+#include "structs.h"
 
 namespace Rainball
 {
     using namespace MxEngine;
 
-    static constexpr float SCALE = 0.3f;
+    static constexpr float SCALE = 0.12f;
     static constexpr Vector3 GRAVITY = { 0, -6.f, 0 };
-    static constexpr float DEFAULT_SPEED = 10.f;
+    static constexpr float DEFAULT_SPEED = 40.f;
     static constexpr size_t sizeX = 200;
     static constexpr size_t sizeZ = 200;
+    static constexpr float BOX_HEIGHT = 2.5f;
 
 
 
@@ -52,7 +54,14 @@ namespace Rainball
         {
             t += timeDelta;
             auto newElev = 8 * scale * (0.5f + sin(t + offset) / 2) * 0 + offsetWaveY;
-            inst->Transform.SetPosition(Vector3(inst->Transform.GetPosition().x, newElev, inst->Transform.GetPosition().z));
+            auto newSize  = newElev + BOX_HEIGHT;
+            auto newPos = inst->Transform.GetPosition();
+            newPos.y = newElev / 2;
+            inst->Transform.SetPosition(newPos);
+            auto newScale = inst->Transform.GetScale();
+            newScale.y = newSize;
+            inst->Transform.SetScale(newScale);
+
             inst->GetComponent<Instance>()->SetColor({ newElev / (8 * scale) * 0.3 + 0.7f, newElev / (8 * scale) * 0.3f + 0.7f, 1 });
             offsetWaveY = 0;
         }
@@ -79,20 +88,20 @@ namespace Rainball
         {
             const float S = 7;
             const float w = 0.45;
-            const float A = 0.05;
+            const float A = 0.008;
             const float T = 10;
             const float L = 2 / w;
             const float phi = S * 2 / L;
 
             t += delta;
             auto epidist = S * t;
-            useless = epidist > arr2.width() * SCALE * 0.1;
+            useless = epidist > arr2.width() * SCALE * 1;
             for (int x = 0; x < arr2.width(); x++)
                 for (int z = 0; z < arr2.height(); z++)
                 {
                     auto epicenter = obj.Transform.GetPosition();
                     auto place = arr2[x][z].inst->Transform.GetPosition();
-                    auto D = (Vector2(place.x - epicenter.x, place.z - epicenter.z));
+                    auto D = (Vector2(place.x - epicenter.x, place.z - epicenter.z)) / 2.7f;
                     if (Length(D) - (t * S) > 2)
                         continue;
                     arr2[x][z].offsetWaveY += strength / (std::abs(Length(D) - (t * S)) + 1) * -A * std::sin(log(t + 1) * T / t * Length(D) * w);
@@ -132,6 +141,7 @@ namespace Rainball
             // add DirectionalLight component with custom light direction
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.5f, 1.0f, 1.0f);
+            dirLight->ProjectionSize = 180;
             // make directional light to be centered at current viewport position (is set by RenderManager::SetViewport)
             dirLight->FollowViewport();
 
@@ -151,14 +161,14 @@ namespace Rainball
                     bumpers[x][z].inst->Transform.SetScale(Vector3(SCALE, 4 * SCALE, SCALE));
                 }
             auto light = MxObject::Create();
-            light->AddComponent<PointLight>()->DiffuseColor = Vector3(1, 0.7f, 0) * 14.f;
-            light->Transform.SetPosition(Vector3(5, 15, 5));
+            light->AddComponent<PointLight>()->DiffuseColor = Vector3(1, 0.7f, 0) * 54.f;
+            light->Transform.SetPosition(Vector3(25, 25, 25));
             light->Name = "Little Sun";
 
             auto sph = MxObject::Create();
             sph->AddComponent<MeshSource>()->Mesh = Primitives::CreateSphere(100);
             sph->AddComponent<MeshRenderer>();
-            sph->Transform.SetScale(0.3);
+            sph->Transform.SetScale(0.6);
             sph->Name = "Spheres";
             spheres = sph->AddComponent<InstanceFactory>();
             auto wave = MxObject::Create();
@@ -166,15 +176,16 @@ namespace Rainball
             waves = wave->AddComponent<InstanceFactory>();
             camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap(R"(D:\main\vs_prj\MxEngine\samples\SandboxApplication\Resources\textures\dawn.jpg)");
 
-            //EventManager::AddEventListener("GC", [this](FpsUpdateEvent& even) mutable {
-            /*
-            EventManager::AddEventListener("GC", [this](UpdateEvent& even) mutable {
-                auto num1 = waves->GetCount();
+            
+            EventManager::AddEventListener("GC", [this](FpsUpdateEvent& even) mutable {
                 for (auto& inst : waves->GetInstances())
                     if (inst->GetComponent<Behaviour>()->GetBehaviour<WaveBehaviour>().useless)
+                    {
                         MxObject::Destroy(inst);
-                auto a = 3;
-                });*/
+                        MX_DBG("Wave #" + (MxString)inst.GetUUID() + " removed");
+                    }
+                });
+
         }
 
 
@@ -212,7 +223,7 @@ namespace Rainball
                     auto z = (int)round(inst->Transform.GetPosition().z / SCALE);
                     if (x < 0 || z < 0 || x >= sizeX || z >= sizeZ)
                         continue;
-                    if (inst->Transform.GetPosition().y < bumpers[x][z].inst->Transform.GetPosition().y)
+                    if (inst->Transform.GetPosition().y < bumpers[x][z].inst->Transform.GetPosition().y + bumpers[x][z].inst->Transform.GetScale().y / 2)
                     {
                         auto wInst = waves->MakeInstance();
                         auto pos = bumpers[x][z].inst->Transform.GetPosition();
@@ -236,7 +247,7 @@ namespace Rainball
 
 int main()
 {
-    ProjectTemplate::MxApplication app;
+    Rainball::MxApplication app;
     app.Run();
     return 0;
 }

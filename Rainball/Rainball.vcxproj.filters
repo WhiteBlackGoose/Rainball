@@ -8,4 +8,7 @@
       <UniqueIdentifier>{c984bb82-e200-4651-aa06-bcfc66546b38}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="structs.h" />
+  </ItemGroup>
 </Project>
