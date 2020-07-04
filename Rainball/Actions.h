@@ -14,6 +14,8 @@ namespace Rainball
 	private:
 		Array2D<SurfaceScript> bumpers;
 		InstanceFactory::Handle waves;
+		Array2D<float> elevations;
+		MxObject::Handle water;
 		int sizeX, sizeZ;
 		float scale;
 	public:
@@ -37,6 +39,8 @@ namespace Rainball
 
 		float GetWidth();
 		float GetHeight();
+
+		Vector3 GetPosition(const int x, const int z);
 	};
 
 	class Player

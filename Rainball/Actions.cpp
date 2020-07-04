@@ -1,5 +1,6 @@
 #include "Actions.h"
 #include <MxEngine.h>
+#include "Constants.h"
 
 /*
 
@@ -10,24 +11,23 @@ WAVER
 Rainball::Waver::Waver(int sizeX, int sizeZ, float scale, float boxHeight) : 
 	sizeX(sizeX), sizeZ(sizeZ), scale(scale)
 {
+	elevations.resize(sizeX, sizeZ);
+
 	auto wave = MxObject::Create();
 	wave->Name = "Waves";
 	waves = wave->AddComponent<InstanceFactory>();
 
-	auto instancer = MxObject::Create();
-	instancer->AddComponent<MeshSource>()->Mesh = Primitives::CreateCube();
-	instancer->AddComponent<MeshRenderer>()->GetMaterial()->Reflection = 1;
-	auto factory = instancer->AddComponent<InstanceFactory>();
-	instancer->Name = "Surface";
+	water = MxObject::Create();
+	water->AddComponent<MeshSource>();
+	water->AddComponent<MeshRenderer>()->GetMaterial()->Reflection = 1;
+	water->Transform.SetScale(Vector3(scale, 1, scale));
+	water->Name = "Surface";
 
-	bumpers.resize(sizeX, sizeZ, SurfaceScript(0, scale, boxHeight));
+	bumpers.resize(sizeX, sizeZ, SurfaceScript());
 	for (int x = 0; x < sizeX; x++)
 		for (int z = 0; z < sizeZ; z++)
 		{
-			bumpers[x][z] = SurfaceScript(x + z, scale, boxHeight);
-			bumpers[x][z].inst = factory->MakeInstance();
-			bumpers[x][z].inst->Transform.SetPosition({ scale * x, 0, scale * z });
-			bumpers[x][z].inst->Transform.SetScale(Vector3(scale, scale, scale));
+			bumpers[x][z] = SurfaceScript(x + z, scale, boxHeight, elevations, x, z);
 		}
 }
 
@@ -36,24 +36,30 @@ void Rainball::Waver::Update(float delta, float strength)
 	for (int x = 0; x < sizeX; x++)
 		for (int z = 0; z < sizeZ; z++)
 			bumpers[x][z].OnUpdate(delta);
+	water->GetComponent<MeshSource>()->Mesh = Primitives::CreateSurface(elevations);
+	
 }
 
 std::tuple<int, int> Rainball::Waver::GetSurfaceId(const MxEngine::Vector3& pos)
-
 {
-	auto x = (int)round(pos.x / scale);
-	auto z = (int)round(pos.z / scale);
+	auto x = (int)round((pos.x + scale / 2) / scale * sizeX);
+	auto z = (int)round((pos.z + scale / 2) / scale * sizeZ);
 	return { x, z };
+}
+
+MxEngine::Vector3 Rainball::Waver::GetPosition(const int x, const int z)
+{
+	return Vector3(x * scale / sizeX, elevations[x][z], z * scale / sizeZ);
 }
 
 void Rainball::Waver::Wave(const int x, const int z, const float strength)
 {
 	auto wInst = waves->MakeInstance();
-	auto pos = bumpers[x][z].inst->Transform.GetPosition();
+	auto pos = GetPosition(x, z);
 	wInst->Transform.SetPosition(pos);
 	wInst->AddComponent<Behaviour>(WaveScript(
 		strength
-		, bumpers, scale));
+		, bumpers, scale, *this));
 
 }
 
@@ -102,12 +108,32 @@ void Rainball::Player::CheckReaction(Waver& destination)
 		if (x < 0 || z < 0 || x >= destination.bumpers.width() || z >= destination.bumpers.height())
 			return;
 
-		if (inst->Transform.GetPosition().y <
-			destination.bumpers[x][z].inst->Transform.GetPosition().y + destination.bumpers[x][z].inst->Transform.GetScale().y / 2)
+		if (inst->Transform.GetPosition().y < destination.GetPosition(x, z).y)
 		{
-			destination.Wave(x, z,
-				inst->GetComponent<Behaviour>()->GetBehaviour<ShotBehaviour>().GetSpeed());
-			MxObject::Destroy(inst);
+			auto& shot = inst->GetComponent<Behaviour>()->GetBehaviour<ShotBehaviour>();
+
+			MX_DBG("New wave at (" + ToMxString(x) + "; " + ToMxString(z) + ") was created");
+			destination.Wave(x, z, shot.GetSpeed());
+
+			auto velo = shot.GetVelocity();
+			volatile auto vecCoef = abs(Dot(Normalize(Vector3(1, 0, 1)), Normalize(velo)));
+			auto xzSpeed = Length(Vector2(velo.x, velo.z));
+
+			if (xzSpeed * vecCoef < BALL_BOUNCE_THRESHOLD || vecCoef < OneOverRootTwo<float>())
+			{
+				MxObject::Destroy(inst);
+				continue;
+			}
+
+			auto currVelocity = velo;
+			currVelocity.y *= -BALL_JUMP_COEF;
+			currVelocity.x *= BALL_JUMP_RESISTANCE;
+			currVelocity.z *= BALL_JUMP_RESISTANCE;
+			shot.defaultVelocity = currVelocity;
+
+			shot.defaultPosition = inst->Transform.GetPosition() + currVelocity * 0.1f;
+
+			shot.timeGone = 0;
 		}
 	}
 }
@@ -125,10 +151,10 @@ Rainball::Player::Player(const Vector3& gravity, const float scale)
 
 float Rainball::Waver::GetWidth()
 {
-	return this->bumpers.width() * scale;
+	return this->bumpers.width() * scale / sizeX;
 }
 
 float Rainball::Waver::GetHeight()
 {
-	return this->bumpers.height() * scale;
+	return this->bumpers.height() * scale / sizeZ;
 }
