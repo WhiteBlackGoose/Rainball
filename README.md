@@ -2,7 +2,7 @@
 Rainball is a simple 3D project with pseudo water simulation based on [MxEngine](https://github.com/asc-community/MxEngine) game engine.
 
 <p align="center">
-<img src="presentation.gif">
+<img src="realistic.gif">
 </p>
 
 ### What is this project about?
