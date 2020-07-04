@@ -15,10 +15,10 @@ namespace Rainball
     PLAYER CONSTANTS
     */
     constexpr MxEngine::Vector3 BALL_GRAVITY = { 0, -6.f, 0 };
-    constexpr float BALL_DEFAULT_SPEED = 40.f;
-    constexpr float BALL_JUMP_COEF = 0.6f;
-    constexpr float BALL_JUMP_RESISTANCE = 0.8f;
-    constexpr float BALL_BOUNCE_THRESHOLD = 10.f;
+    constexpr float BALL_DEFAULT_SPEED = 70.f;
+    constexpr float BALL_JUMP_COEF = 0.7f;
+    constexpr float BALL_JUMP_RESISTANCE = 0.75f;
+    constexpr float BALL_BOUNCE_THRESHOLD = 25.f;
 
     /*
     WAVE CONSTANTS

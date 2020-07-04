@@ -23,7 +23,9 @@ namespace Rainball
             auto input = camera->AddComponent<InputControl>();
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(30);
-            camera->Transform.SetPosition(Vector3(10, 10, 10));
+            camera->Transform.SetPosition(Vector3(30, 25, 60));
+            
+            
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             RenderManager::SetViewport(controller);
@@ -64,10 +66,22 @@ namespace Rainball
         virtual void OnUpdate() override
         {
             timeGone += GetTimeDelta();
-            if (timeGone > 3243543)
+            if (timeGone > 5)
             {
-                player.Shoot(Vector3((Random::GetFloat() - 0.5f) * waver.GetWidth(), 60, (Random::GetFloat() - 0.5f) * waver.GetHeight()),
+                if (Random::GetFloat() > 1.5)
+                    player.Shoot(Vector3((Random::GetFloat() - 0.5f) * waver.GetWidth() / 2, 60, (Random::GetFloat() - 0.5f) * waver.GetHeight() / 2),
                     Vector3(0, -1, 0), 48);
+                else
+                {
+                    auto angle = Random::GetFloat() * 2 * Pi<float>();
+                    auto posFromX = std::sin(angle) * waver.GetWidth();
+                    auto posFromZ = std::cos(angle) * waver.GetWidth();
+                    auto posFromY = 25;
+                    auto posFrom = Vector3(posFromX, posFromY, posFromZ);
+                    auto direction = Vector3(0, 0, 0) /*Center's position*/ - posFrom /*Player's position*/;
+                    direction = Normalize(direction);
+                    player.Shoot(posFrom, direction, 48);
+                }
                 timeGone = 0;
             }
 

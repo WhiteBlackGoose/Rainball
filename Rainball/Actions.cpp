@@ -116,7 +116,15 @@ void Rainball::Player::CheckReaction(Waver& destination)
 			destination.Wave(x, z, shot.GetSpeed());
 
 			auto velo = shot.GetVelocity();
-			volatile auto vecCoef = abs(Dot(Normalize(Vector3(1, 0, 1)), Normalize(velo)));
+			auto veloProjection = Vector3(velo.x, 0, velo.z);
+
+			if (Length(velo) * Length(veloProjection) < 1e-8f) // check to avoid NaNs
+			{
+				MxObject::Destroy(inst);
+				continue;
+			}
+
+			volatile auto vecCoef = abs(Dot(Normalize(veloProjection), Normalize(velo)));
 			auto xzSpeed = Length(Vector2(velo.x, velo.z));
 
 			if (xzSpeed * vecCoef < BALL_BOUNCE_THRESHOLD || vecCoef < OneOverRootTwo<float>())
@@ -131,7 +139,7 @@ void Rainball::Player::CheckReaction(Waver& destination)
 			currVelocity.z *= BALL_JUMP_RESISTANCE;
 			shot.defaultVelocity = currVelocity;
 
-			shot.defaultPosition = inst->Transform.GetPosition() + currVelocity * 0.1f;
+			shot.defaultPosition = inst->Transform.GetPosition();
 
 			shot.timeGone = 0;
 		}
@@ -144,7 +152,7 @@ Rainball::Player::Player(const Vector3& gravity, const float scale)
 	auto sph = MxObject::Create();
 	sph->AddComponent<MeshSource>()->Mesh = Primitives::CreateSphere(100);
 	sph->AddComponent<MeshRenderer>();
-	sph->Transform.SetScale(0.6);
+	sph->Transform.SetScale(Vector3(2.6f, 0.6f, 2.6f));
 	sph->Name = "ShotFactory";
 	spheres = sph->AddComponent<InstanceFactory>();
 }
