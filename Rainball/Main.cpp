@@ -23,7 +23,9 @@ namespace Rainball
             auto input = camera->AddComponent<InputControl>();
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(30);
-            camera->Transform.SetPosition(Vector3(10, 10, 10));
+            camera->Transform.SetPosition(Vector3(30, 25, 60));
+            
+            
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             RenderManager::SetViewport(controller);
@@ -44,17 +46,19 @@ namespace Rainball
             DefaultInit();
             
             // Uncomment this to enable a skybox
-            //camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("./Resources/night.png");
+            camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("./resources/sky.png");
 
+            /*
             auto light = MxObject::Create();
             light->AddComponent<PointLight>()->DiffuseColor = Vector3(0.6f, 0.6f, 1) * 54.f;
             light->Transform.SetPosition(Vector3(25, 25, 25));
-            light->Name = "Little Sun";
+            light->Name = "Little Sun";*/
             
             EventManager::AddEventListener("GC", [this](FpsUpdateEvent& even) mutable {
                 waver.GarbageCollect();
                 });
 
+            Logger::Instance().UseDebug(false);
         }
 
         float timeGone = 0;
@@ -62,10 +66,22 @@ namespace Rainball
         virtual void OnUpdate() override
         {
             timeGone += GetTimeDelta();
-            if (timeGone > 3)
+            if (timeGone > 5)
             {
-                player.Shoot(Vector3(Random::GetFloat() * waver.GetWidth(), 30, Random::GetFloat() * waver.GetHeight()),
+                if (Random::GetFloat() > 1.5)
+                    player.Shoot(Vector3((Random::GetFloat() - 0.5f) * waver.GetWidth() / 2, 60, (Random::GetFloat() - 0.5f) * waver.GetHeight() / 2),
                     Vector3(0, -1, 0), 48);
+                else
+                {
+                    auto angle = Random::GetFloat() * 2 * Pi<float>();
+                    auto posFromX = std::sin(angle) * waver.GetWidth();
+                    auto posFromZ = std::cos(angle) * waver.GetWidth();
+                    auto posFromY = 25;
+                    auto posFrom = Vector3(posFromX, posFromY, posFromZ);
+                    auto direction = Vector3(0, 0, 0) /*Center's position*/ - posFrom /*Player's position*/;
+                    direction = Normalize(direction);
+                    player.Shoot(posFrom, direction, 48);
+                }
                 timeGone = 0;
             }
 

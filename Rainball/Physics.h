@@ -25,6 +25,11 @@ namespace Rainball
         Returns the current speed of the shot
         */
         float GetSpeed();
+
+        /*
+        Returns the current velocity
+        */
+        Vector3 GetVelocity();
     };
 
 
@@ -37,11 +42,14 @@ namespace Rainball
         float offsetWaveY;
         float boxHeight;
 
-        MxObject::Handle inst;
-        SurfaceScript(float offset, float SCALE, float boxHeight);
+        Array2D<float>* surface;
+        size_t xId, zId;
+        SurfaceScript(){}
+        SurfaceScript(float offset, float SCALE, float boxHeight, Array2D<float>& surface, size_t xId, size_t zId);
         void OnUpdate(float timeDelta);
     };
 
+    class Waver;
 
     struct WaveScript
     {
@@ -49,9 +57,10 @@ namespace Rainball
         float t = 0;
         float strength;
         Array2D<SurfaceScript>& arr2;
+        Waver& parent;
         bool useless;
         float scale;
-        WaveScript(float strength, Array2D<SurfaceScript>& cubes, float scale);
+        WaveScript(float strength, Array2D<SurfaceScript>& cubes, float scale, Waver& waver);
         void OnUpdate(MxObject& obj, float delta);
     };
 
