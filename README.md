@@ -7,7 +7,7 @@ Rainball is a simple 3D project with pseudo water simulation based on [MxEngine]
 
 ### What is this project about?
 
-It is a small sample of what you can do using brand new [MxEngine](https://github.com/asc-community/MxEngine). It uses GPU instanced rendering (through engine `InstanceFactory` component API) to simulate water as 2D array of fully shaded cubes. There are no direct calls to graphic api or custom shaders involved, application only uses engine abstractions to render a bunch of moving objects.
+It is a small sample of what you can do using brand new [MxEngine](https://github.com/asc-community/MxEngine). It uses `Primitives::CreateSurface()` function to generate waves on water surface. There are no direct calls to graphic api or custom shaders involved, application only uses engine abstractions to render a single mesh with high reflectance factor.
 
 ### About MxEngine
 
